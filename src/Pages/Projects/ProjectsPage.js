@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiAlertCircle, FiChevronDown, FiSearch, FiX } from "react-icons/fi";
+import SEOHead from "../../components/SEOHead";
 
 import ProjectHero from "./ProjectHero";
 import ProjectCard from "./ProjectCard";
@@ -66,6 +67,19 @@ const ProjectCardSkeleton = () => (
 
 
 const ProjectGallery = () => {
+  return (
+    <>
+      <SEOHead
+        title="Projects"
+        description="Explore community-built projects from hackathons, events, and open-source contributions on Eventra."
+        url={window.location.href}
+      />
+      <InnerGallery />
+    </>
+  );
+};
+
+const InnerGallery = () => {
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterCategory, setFilterCategory] = useState("all");
@@ -131,10 +145,11 @@ const ProjectGallery = () => {
           publicRequestConfig
         );
         const projectsData = response.data;
-        // only use API data if it is a valid non-empty array; otherwise fall back to mock
-        if (Array.isArray(projectsData) && projectsData.length > 0) {
-          setProjects(projectsData);
-
+const projectsList = Array.isArray(projectsData)
+  ? projectsData
+  : projectsData?.content || projectsData?.projects || [];
+if (projectsList.length > 0) {
+  setProjects(projectsList);
           // Attempt to fetch categories from API
           try {
             const categoriesResponse = await apiUtils.get(
@@ -152,19 +167,13 @@ const ProjectGallery = () => {
         }
 
         // --- MOCK DATA FALLBACK: API returned empty or invalid array ---
-        console.warn("Projects API returned empty or invalid array — loading mock data.");
         setProjects(mockProjects);
         const mockUniqueCategories = [
           ...new Set(mockProjects.map((p) => p?.category).filter(Boolean)),
         ];
         setCategories(["all", ...mockUniqueCategories]);
       } catch (err) {
-        console.error("Error fetching projects:", err);
-
         if (err?.status === 401) {
-          console.warn(
-            "Projects API returned 401 for unauthenticated access — loading public mock data fallback."
-          );
           setProjects(mockProjects);
           const fallbackCategories = [
             ...new Set(mockProjects.map((p) => p?.category).filter(Boolean)),
@@ -174,7 +183,6 @@ const ProjectGallery = () => {
         }
 
         // Always gracefully fall back to mock data when API is unavailable
-        console.warn("API unavailable — falling back to mock project data.");
         setProjects(mockProjects);
         const fallbackCategories = [
           ...new Set(mockProjects.map((p) => p?.category).filter(Boolean)),
@@ -189,7 +197,7 @@ const ProjectGallery = () => {
     fetchProjects();
   }, [fetchProjects]);
 
-  const filteredAndSortedProjects = projects
+ const filteredAndSortedProjects = (Array.isArray(projects) ? projects : [])
     .filter((project) => {
       if (filterCategory === "bookmarked") {
         if (!bookmarks.includes(project.id)) {

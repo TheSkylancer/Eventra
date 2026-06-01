@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import FAQCTA from "./FaqCTA";
-import useDocumentTitle from "../../hooks/useDocumentTitle";
+import SEOHead from "../../components/SEOHead";
 
 // Centralized FAQ entries classified under General, Hackathons, or Account categories
 const faqs = [
@@ -102,7 +102,19 @@ const faqs = [
 const NAVBAR_HEIGHT = 65;
 
 export default function FAQSection() {
-  useDocumentTitle("Eventra | FAQ");
+  return (
+    <>
+      <SEOHead
+        title="FAQ"
+        description="Frequently asked questions about Eventra — get answers about events, hackathons, registration, and community."
+        url={window.location.href}
+      />
+      <FAQSectionInner />
+    </>
+  );
+}
+
+function FAQSectionInner() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -138,9 +150,7 @@ export default function FAQSection() {
     try {
       const saved = localStorage.getItem("eventra_faq_ratings");
       if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.error(e);
-    }
+    } catch {}
 
     const initial = {};
     faqs.forEach((faq, idx) => {
@@ -177,9 +187,7 @@ export default function FAQSection() {
 
       try {
         localStorage.setItem("eventra_faq_ratings", JSON.stringify(updated));
-      } catch (err) {
-        console.error(err);
-      }
+      } catch {}
       return updated;
     });
   };

@@ -4,9 +4,7 @@ import {
   FolderKanban,
   Users,
   Trophy,
-  Info,
   MessageSquare,
-  HelpCircle,
   Book,
   Bookmark,
 } from "lucide-react";
@@ -49,7 +47,7 @@ export const NAV_ITEMS = [
       },
       {
         name: "Leaderboard",
-        href: "/leaderBoard",
+        href: "/leaderboard",
         icon: <Trophy className="w-5 h-5" />,
       },
       {
